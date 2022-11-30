@@ -51,15 +51,20 @@ Additional optional arguments are:
                             -1       = don't use gpu
                              0       = select gpu with most available memory
                              1,2,... = use specific gpu
---ctf               Perform CTF correction
---iter              Maximum number of iterations to perform
---norm              Perform normalisation-error correction
---em_num_inputs     Number of images to use for EM (taken from best of each class) (<= class_size)
---em_par            Perform EM parallelly (recommended)
---num_class_avg     Number of class averages to produce (<= num_classes)
+--ctf                Perform CTF correction
+--iter               Maximum number of iterations to perform
+--norm               Perform normalisation-error correction
+--em_num_inputs      Number of images to use for EM (taken from best of each class) (<= class_size)
+--em_par             Perform EM parallelly (recommended)
+--num_class_avg      Number of class averages to produce (<= num_classes)
 ```
 
-
+## Example usage
+```
+cryo_class_average --starfile dir/some_star.star --output dir/class_averages.mrcs
+   
+cryo_class_average --starfile dir/some_star.star --output dir/class_averages.mrcs --num_classes 3000 --num_class_avg 2000
+```
 
 
 
