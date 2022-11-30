@@ -1,7 +1,0 @@
-numpy
-cupy
-scipy
-mrcfile
-psutil
-pickle5
-progress

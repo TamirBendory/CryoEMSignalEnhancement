@@ -1,2 +1,0 @@
-[console_scripts]
-cryo_class_average = src.__main__:main

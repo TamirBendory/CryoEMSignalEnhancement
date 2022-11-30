@@ -1,17 +1,17 @@
-import sys, os, argparse
+import sys, os, argparse, shutil
 import pickle5 as pickle
-import numpy as np
-from scipy.io import savemat
+#import numpy as np
+#from scipy.io import savemat
 
-# os.chdir('/scratch/guysharon/Work/Python/cryo_class_average')
-from src.cryo_class_average import class_average
+# os.chdir('/scratch/guysharon/Work/Python/cryo_signal_enhance')
+from src.cryo_signal_enhance import class_average
 
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
     # args = '-h -batch_size 1 --N 10000 --em_num_inputs 100 --num_classes 100 --class_size 100 --num_class_avg 100 --starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output /scratch/guysharon/Work/Python/saved_test_data/ca_10028'
-    # args = '--starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028.pkl --N 1000 --num_class_avg 10 --em_num_input 20 --num_classes 200'
+    # args = '--starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028.pkl --N 1000 --num_class_avg 10 --em_num_inputs 20 --num_classes 200'
     # sys.argv[1:] = args.split(' ')
     
     #%%#################### default values for arguments #%%####################
@@ -43,7 +43,8 @@ def main(args=None):
             
         #   DEBUG
             'debug_verbose':        False,
-            'random_seed':          -1
+            'random_seed':          -1,
+            'sample':               False
         }
     opts_keys = list(opts.keys())
     
@@ -93,7 +94,7 @@ def main(args=None):
                             --debug_verbose      ({opts['debug_verbose']})  : Prints debug messages
 
 Usage:
-    cryo_class_average --starfile STARFILE --output OUTPUT [-h]
+    cryo_signal_enhance --starfile STARFILE --output OUTPUT [-h]
                        [--basis_file_out BASIS_FILE_OUT]
                        [--basis_file_in BASIS_FILE_IN] [--N N] [--verbose VERBOSE]
                        [--downsample DOWNSAMPLE] [--batch_size BATCH_SIZE]
@@ -105,11 +106,11 @@ Usage:
                        [--debug_verbose DEBUG_VERBOSE]
                        
 Example usage:
-    cryo_class_average --starfile dir/some_star.star --output dir/class_averages.mrcs
+    cryo_signal_enhance --starfile dir/some_star.star --output dir/class_averages.mrcs
     
-    cryo_class_average --starfile dir/some_star.star --output dir/class_averages.mrcs --num_classes 3000 --num_class_avg 2000
+    cryo_signal_enhance --starfile dir/some_star.star --output dir/class_averages.mrcs --num_classes 3000 --num_class_avg 2000
     
-    cryo_class_average ... --help
+    cryo_signal_enhance ... --help
 """
     
     if '--help' in args or '-h' in args:
@@ -122,6 +123,14 @@ Example usage:
     except:
         print(help_str)
         return
+    
+    # debug, check if small sample
+    if args.sample:
+        args.N = 1000
+        args.num_classes = 10
+        args.class_size = 20
+        args.num_class_avg = 10
+        args.em_num_inputs = 20
     
     for arg in vars(args):
         if arg in opts_keys:
@@ -147,6 +156,13 @@ Example usage:
         
     if not isvalid(opts):
         print(help_str)
+        return
+    
+    if shutil.which('relion_refine') == None:
+        print("'relion_refine' directory is not in path.")
+        print("You can add it to the path using:")
+        print("Python:   os.environ['PATH'] = 'relion_refine_dir_full_path:' + os.environ['PATH']")
+        print("Terminal: export PATH=relion_refine_dir_full_path:$PATH")
         return
     
     #%% check for external basis file

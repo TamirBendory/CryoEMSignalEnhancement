@@ -6,7 +6,8 @@ classification and expectation-maximization.
 
 ## Installation
 ```
-pip install cryo_class_average
+python setup.py sdist
+pip install ./dist/cryo_signal_enhance -1.0.tar.gz
 ```
 
 ## Arguments
@@ -61,9 +62,9 @@ Additional optional arguments are:
 
 ## Example usage
 ```
-cryo_class_average --starfile dir/some_star.star --output dir/class_averages.mrcs
+cryo_signal_enhance --starfile dir/some_star.star --output dir/class_averages.mrcs
    
-cryo_class_average --starfile dir/some_star.star --output dir/class_averages.mrcs --num_classes 3000 --num_class_avg 2000
+cryo_signal_enhance --starfile dir/some_star.star --output dir/class_averages.mrcs --num_classes 3000 --num_class_avg 2000
 ```
 
 

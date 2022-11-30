@@ -1,3 +1,5 @@
 src/logs/*
 logs/*
 *.pyc
+dist
+*.egg-info

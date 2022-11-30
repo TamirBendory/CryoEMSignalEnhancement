@@ -13,10 +13,9 @@ from src.aspire.storage import StarFile
 from src.aspire.image import Image
 from src.aspire.noise import AnisotropicNoiseEstimator
 
-import scipy, os, sys, copy, binascii, subprocess, mrcfile, stat
+import scipy, os, sys, copy, binascii, subprocess, mrcfile
 import concurrent.futures, time, logging, warnings, shutil, psutil
 from scipy.spatial.transform import Rotation
-from multiprocessing.pool import ThreadPool
 from contextlib import contextmanager
 from datetime import datetime
 from tqdm import tqdm
@@ -664,7 +663,7 @@ def EM_class_average(classes, classes_ref, starfile_fullpath, opts):
     n_inputs                = opts["em_num_inputs"]
     datafiles_folder        = tempname(opts['writeable_dir'])
     #f[em_opts.n_ca,1]       = parallel.FevalFuture;
-    tmpname                 = tempname()
+    #tmpname                 = tempname()
     mrcsfname               = os.path.join(datafiles_folder,'em_inputs_images.mrcs')
     
     if np.mean(classes_ref[0:n_inputs,0:n_ca]) > 0.5:
@@ -749,7 +748,8 @@ def EM_class_average(classes, classes_ref, starfile_fullpath, opts):
     #             except: 
     #                 pass
     #     progress_bar("        fetching results...", int(np.sum(fetched_image)-1), n_ca, opts['verbose'])
-
+    
+    CreateMySetupSh(datafiles_folder)
     warnings.filterwarnings("ignore")
     if (opts["em_par"]):
         #my_log('    Applying EM to each class...', opts['verbose'])
@@ -806,7 +806,7 @@ def EM_class_average(classes, classes_ref, starfile_fullpath, opts):
     
     # clean up
     shutil.rmtree(datafiles_folder)
-    
+        
     return ca_stack
  
 #%%
@@ -829,7 +829,7 @@ def rlnEM(datafiles_folder,dirId,opts,particle_diameter_A):
     indir               = datafiles_folder + "/em_input/"  + dirId
     outdir              = datafiles_folder + "/em_output/" + dirId
     starfname           = indir + "/" + "in.star"
-    cmd = "source /opt/relion3.1/setup.sh; relion_refine --o {0} --i {1} {2} --pad 2 --iter {3} --tau2_fudge 2 --particle_diameter {4} --K 1 --zero_mask --oversampling 1 --psi_step 5 --offset_range 5 --sym c1 --offset_step 2 --{5} --scale --j 64 --random_seed -1 --verb 0".format(
+    cmd = "source my_setup.sh; relion_refine --o {0} --i {1} {2} --pad 2 --iter {3} --tau2_fudge 2 --particle_diameter {4} --K 1 --zero_mask --oversampling 1 --psi_step 5 --offset_range 5 --sym c1 --offset_step 2 --{5} --scale --j 64 --random_seed -1 --verb 0".format(
             outdir + "/run", starfname, opts["ctf"], opts["iter"], int(np.ceil(particle_diameter_A)) , opts["norm"])
     _ = subprocess.check_output(['bash', '-c', cmd], stderr=subprocess.DEVNULL)
     
@@ -837,6 +837,72 @@ def rlnEM(datafiles_folder,dirId,opts,particle_diameter_A):
     averagefname = "{0}/run_it{1:03d}_classes.mrcs".format(outdir,best_iter)
     ca = ReadMRC(averagefname)
     return ca
+
+def CreateMySetupSh(datafiles_folder):
+    txt = """#module load mpi/openmpi-x86_64
+
+#!/bin/bash 
+
+if [ -n "$LD_LIBRARY_PATH" ]; then
+	echo "LD_LIBRARY_PATH exists"
+	if [ "${LD_LIBRARY_PATH/"/usr/lib/openmpi/lib"}" = "$LD_LIBRARY_PATH" ]; then
+		export LD_LIBRARY_PATH=/usr/lib/openmpi/lib:$LD_LIBRARY_PATH
+        fi
+else
+        export LD_LIBRARY_PATH=/usr/lib/openmpi/lib
+fi
+
+# Setup RELION if not already done so
+if [ "${PATH/"/opt/relion3.1/bin"}" = "$PATH" ]; then
+	export PATH=/opt/relion3.1/bin:$PATH
+fi
+
+if [ -n "$LD_LIBRARY_PATH" ]; then
+	if [ "${LD_LIBRARY_PATH/"/opt/relion3.1/lib"}" = "$LD_LIBRARY_PATH" ]; then
+                export LD_LIBRARY_PATH=/opt/relion3.1/lib:$LD_LIBRARY_PATH
+        fi
+else
+        export LD_LIBRARY_PATH=/opt/relion3.1/lib
+fi
+
+# CUDA for RELION
+export PATH=/usr/local/cuda/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+export CUDA_HOME=/usr/local/cuda
+
+# Where is qsub template script stored
+# setenv RELION_QSUB_TEMPLATE /public/EM/RELION/relion-prerelease/bin/qsub.csh
+
+# Default PDF viewer
+export RELION_PDFVIEWER_EXECUTABLE=evince
+
+# Default MOTIONCORR executable
+export RELION_MOTIONCORR_EXECUTABLE=/opt/motioncorr2/MotionCor2-01-30-2017
+
+# Default UNBLUR/SUMMOVIE executables
+export RELION_UNBLUR_EXECUTABLE=/opt/EM/UNBLUR/unblur.exe
+export RELION_SUMMOVIE_EXECUTABLE=/opt/EM/SUMMOVIE/summovie.exe
+
+# Default CTFFIND executable, version 4.0.x
+export RELION_CTFFIND_EXECUTABLE='"/opt/ctffind4/bin/ctffind"'
+
+# Default Gctf executable
+# setenv RELION_GCTF_EXECUTABLE /public/EM/Gctf/bin/Gctf
+
+# Default ResMap executable
+export RELION_RESMAP_EXECUTABLE=/public/EM/ResMap/ResMap-1.1.4-linux64
+
+# Enforce cluster jobs to occupy entire nodes with 24 hyperthreads
+export RELION_MINIMUM_DEDICATED=24
+# Do not allow the user to change the enforcement of entire nodes
+export RELION_ALLOW_CHANGE_MINIMUM_DEDICATED=0
+
+# Ask for confirmation if users try to submit local jobs with more than 12 MPI nodes
+export RELION_WARNING_LOCAL_MPI=12
+"""
+
+    with open(os.path.join(datafiles_folder,'setup.sh'), 'w') as f:
+        f.write(txt)
 
 #%%
 def SortByContrast(stack):
@@ -859,10 +925,10 @@ def SortByContrast(stack):
 def tempname(writeable_dir = "", n = 14):
     # simply returns an n lengthed string of hexas
     hexas = str(binascii.b2a_hex(os.urandom(n)))[2:-1:]
-    if not os.path.exists(f"{writeable_dir}/tmp"):
-        os.mkdir(f"{writeable_dir}/tmp")
-    os.mkdir(f"{writeable_dir}/tmp/{hexas}")
-    return f"{writeable_dir}/tmp/{hexas}"
+    if not os.path.exists(f"{writeable_dir}/CryoEMSignalEnhancementTmp"):
+        os.mkdir(f"{writeable_dir}/CryoEMSignalEnhancementTmp")
+    os.mkdir(f"{writeable_dir}/CryoEMSignalEnhancementTmp/{hexas}")
+    return f"{writeable_dir}/CryoEMSignalEnhancementTmp/{hexas}"
 
 #%%
 def find(boolarr):

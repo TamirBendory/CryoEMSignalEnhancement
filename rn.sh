@@ -1,14 +1,15 @@
 #!/bin/sh
 # /usr/local.cc/bin/matlabr2018b -c 27000@lm8-2 &
-# . '/scratch/guysharon/Work/Python/cryo_class_average/rn.sh'
+# . '/scratch/guysharon/Work/CryoEMSignalEnhancement/rn.sh'
 
 # reinstall package
-cd /scratch/guysharon/Work/Python/cryo_class_average
+cd /scratch/guysharon/Work/CryoEMSignalEnhancement
 python setup.py sdist 
-pip install dist/cryo_class_average-1.0.tar.gz
+pip install dist/cryo_signal_enhance-1.0.tar.gz
 clear
 
-#'/home/guysharon/.local/bin/cryo_class_average' --starfile /scratch/guysharon/Work/starfiles/dataset_10049 --output /scratch/guysharon/Work/Python/saved_test_data/ca_10049 --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10049 --debug_verbose True --num_classes 5000 --class_size 500
+'/home/guysharon/.local/bin/cryo_signal_enhance' --starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output /scratch/guysharon/Work/Python/saved_test_data/tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028 --sample True
+done
 
 # test starfiles that I created
 #return
