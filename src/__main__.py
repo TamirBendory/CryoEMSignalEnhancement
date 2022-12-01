@@ -124,7 +124,6 @@ Example usage:
         return
     
     # debug, check if small sample
-    print(args)
     if args.sample == True:
         args.N = 1000
         args.num_classes = 10
