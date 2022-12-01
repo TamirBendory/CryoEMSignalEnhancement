@@ -749,7 +749,7 @@ def EM_class_average(classes, classes_ref, starfile_fullpath, opts):
     #                 pass
     #     progress_bar("        fetching results...", int(np.sum(fetched_image)-1), n_ca, opts['verbose'])
     
-    CreateMySetupSh(datafiles_folder)
+    #CreateMySetupSh(datafiles_folder)
     warnings.filterwarnings("ignore")
     if (opts["em_par"]):
         #my_log('    Applying EM to each class...', opts['verbose'])
@@ -829,7 +829,7 @@ def rlnEM(datafiles_folder,dirId,opts,particle_diameter_A):
     indir               = datafiles_folder + "/em_input/"  + dirId
     outdir              = datafiles_folder + "/em_output/" + dirId
     starfname           = indir + "/" + "in.star"
-    cmd = "source my_setup.sh; relion_refine --o {0} --i {1} {2} --pad 2 --iter {3} --tau2_fudge 2 --particle_diameter {4} --K 1 --zero_mask --oversampling 1 --psi_step 5 --offset_range 5 --sym c1 --offset_step 2 --{5} --scale --j 64 --random_seed -1 --verb 0".format(
+    cmd = "relion_refine --o {0} --i {1} {2} --pad 2 --iter {3} --tau2_fudge 2 --particle_diameter {4} --K 1 --zero_mask --oversampling 1 --psi_step 5 --offset_range 5 --sym c1 --offset_step 2 --{5} --scale --j 64 --random_seed -1 --verb 0".format(
             outdir + "/run", starfname, opts["ctf"], opts["iter"], int(np.ceil(particle_diameter_A)) , opts["norm"])
     _ = subprocess.check_output(['bash', '-c', cmd], stderr=subprocess.DEVNULL)
     

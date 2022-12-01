@@ -3,15 +3,14 @@ import pickle5 as pickle
 #import numpy as np
 #from scipy.io import savemat
 
-# os.chdir('/scratch/guysharon/Work/Python/cryo_signal_enhance')
+# os.chdir('/scratch/guysharon/Work/CryoEMSignalEnhancement')
 from src.cryo_signal_enhance import class_average
 
 def main(args=None):
     if args is None:
         args = sys.argv[1:]
 
-    # args = '-h -batch_size 1 --N 10000 --em_num_inputs 100 --num_classes 100 --class_size 100 --num_class_avg 100 --starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output /scratch/guysharon/Work/Python/saved_test_data/ca_10028'
-    # args = '--starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028.pkl --N 1000 --num_class_avg 10 --em_num_inputs 20 --num_classes 200'
+    # args = '--starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output /scratch/guysharon/Work/Python/saved_test_data/tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028'
     # sys.argv[1:] = args.split(' ')
     
     #%%#################### default values for arguments #%%####################
@@ -125,7 +124,8 @@ Example usage:
         return
     
     # debug, check if small sample
-    if args.sample:
+    print(args)
+    if args.sample == True:
         args.N = 1000
         args.num_classes = 10
         args.class_size = 20

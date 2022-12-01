@@ -1,6 +1,6 @@
 #!/bin/sh
 # /usr/local.cc/bin/matlabr2018b -c 27000@lm8-2 &
-# . '/scratch/guysharon/Work/CryoEMSignalEnhancement/rn.sh'
+# . '/scratch/guysharon/Work/bash/rn.sh'
 
 # reinstall package
 cd /scratch/guysharon/Work/CryoEMSignalEnhancement
@@ -8,7 +8,7 @@ python setup.py sdist
 pip install dist/cryo_signal_enhance-1.0.tar.gz
 clear
 
-'/home/guysharon/.local/bin/cryo_signal_enhance' --starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output /scratch/guysharon/Work/Python/saved_test_data/tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028 --sample True
+'/home/guysharon/.local/bin/cryo_signal_enhance' --starfile /scratch/guysharon/Work/starfiles/dataset_10028 --output /scratch/guysharon/Work/Python/saved_test_data/tmp --basis_file_in /scratch/guysharon/Work/Python/saved_test_data/basis_10028
 done
 
 # test starfiles that I created

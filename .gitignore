@@ -1,3 +1,5 @@
+logs
+src/logs
 src/logs/*
 logs/*
 *.pyc
