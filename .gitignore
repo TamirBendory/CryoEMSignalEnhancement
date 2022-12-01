@@ -3,6 +3,6 @@ src/logs
 src/logs/*
 logs/*
 *.pyc
-dist
+dist/
 dist/*
 *.egg-info
