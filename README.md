@@ -6,8 +6,8 @@ classification and expectation-maximization.
 
 ## Installation
 ```
-python setup.py sdist
-pip install ./dist/cryo_signal_enhance -1.0.tar.gz
+python setup.py sdist 
+pip install dist/cryo_signal_enhance-1.0.tar.gz
 ```
 
 ## Arguments

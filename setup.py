@@ -17,6 +17,5 @@ setup(
         'psutil',
         'pickle5',
         'progress',
-        'shutil'
         ],
 )

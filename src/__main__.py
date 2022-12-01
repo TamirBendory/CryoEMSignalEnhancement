@@ -158,10 +158,12 @@ Example usage:
         return
     
     if shutil.which('relion_refine') == None:
-        print("'relion_refine' directory is not in path.")
-        print("You can add it to the path using:")
-        print("Python:   os.environ['PATH'] = 'relion_refine_dir_full_path:' + os.environ['PATH']")
-        print("Terminal: export PATH=relion_refine_dir_full_path:$PATH")
+        print("ERROR: ")
+        print("     'relion_refine' directory is not in path.")
+        print("      You can add it to the path using:")
+        print("      Python:   os.environ['PATH'] = 'relion_refine_dir_full_path:' + os.environ['PATH']")
+        print("      Terminal: export PATH=relion_refine_dir_full_path:$PATH")
+        print(" ")
         return
     
     #%% check for external basis file
