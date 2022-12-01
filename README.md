@@ -66,6 +66,3 @@ cryo_signal_enhance --starfile dir/some_star.star --output dir/class_averages.mr
    
 cryo_signal_enhance --starfile dir/some_star.star --output dir/class_averages.mrcs --num_classes 3000 --num_class_avg 2000
 ```
-
-
-

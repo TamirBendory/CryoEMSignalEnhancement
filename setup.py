@@ -16,6 +16,7 @@ setup(
         'mrcfile',
         'psutil',
         'pickle5',
-        'progress'
+        'progress',
+        'shutil'
         ],
 )
